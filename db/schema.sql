@@ -5,7 +5,7 @@ USE staffing_db;
 
 CREATE TABLE department (
   id INT NOT NULL PRIMARY KEY,
-  department_name VARCHAR(30)
+  name VARCHAR(30)
 );
 
 CREATE TABLE roles (

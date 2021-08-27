@@ -18,11 +18,62 @@ const db = mysql.createConnection(
       user: 'root',
       
       password: 'password',
-      database: 'courses_db'
+      database: 'staffing_db'
     },
-    console.log(`Connected to the courses_db database.`)
+    console.log(`Connected to the staffing_db database.`)
   );
   
+function startTable() {
+  return inquirer
+  .prompt([
+    {
+      type: "list",
+      name: "toDo",
+      message: "What would you like to do?",
+      choices: ["View All Employees", "Add Employee", "Update Employee Role",
+    "View All Roles", "Add Role", "View All Departments", "Add Department",
+  "View All Employees", "Quit"],
+    },
+  ])
+
+  .then((answers) => {
+    switch (answers.toDo) {
+      case "View All Employees":
+        
+        break;
+      case "Add Employee":
+        
+        break;
+        case "Update Employee Role":
+        
+        break;
+        case "View All Roles":
+        
+        break;
+        case "Add Role":
+        
+        break;
+        case "View All Departments":
+        
+        break;
+        case "Add Department":
+        
+        break;
+        case "View All Employees":
+        
+        break;
+        case "Quit":
+        
+        break;
+      default:
+        return;
+    }
+  })
+  //shows error if any
+  .catch((err) => console.error(err));
+}
+
+
 
 
   // Default response for any other request (Not Found)
@@ -33,3 +84,5 @@ app.use((req, res) => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
+
+  startTable();

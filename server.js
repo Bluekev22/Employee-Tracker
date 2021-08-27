@@ -3,13 +3,6 @@ const inquirer = require("inquirer");
 const cTable = require('console.table');
 const mysql = require('mysql2');
 
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
 // Connect to database
 const db = mysql.createConnection(
     {
@@ -39,28 +32,28 @@ function startTable() {
   .then((answers) => {
     switch (answers.toDo) {
       case "View All Employees":
-        
+        viewAllEmployees();
         break;
       case "Add Employee":
-        
+        addEmployee();
         break;
         case "Update Employee Role":
-        
+        updateEmployeeRole();
         break;
         case "View All Roles":
-        
+        viewAllRoles();
         break;
         case "Add Role":
-        
+        addRole();
         break;
         case "View All Departments":
-        
+        viewAllDepartments();
         break;
         case "Add Department":
-        
+        addDepartment();
         break;
         case "View All Employees":
-        
+        viewAllEmployees();
         break;
         case "Quit":
         
@@ -73,16 +66,19 @@ function startTable() {
   .catch((err) => console.error(err));
 }
 
-
-
-
-  // Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-  });
+function viewAllDepartments() {
+  const sql = `SELECT department.id AS id, deparment.name AS department FROM department`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+      } else {
+        console.table(response);
+      }
+    })
   
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+}
+
+
+
 
   startTable();

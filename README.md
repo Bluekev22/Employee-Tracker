@@ -2,7 +2,7 @@
 
 ## Link to demo video: https://drive.google.com/file/d/1qdFoL3ign7m1ZsoTM53zmai03Xtkw-e3/view
 
-![image](https://user-images.githubusercontent.com/84198162/131265041-cb73b9e9-6d51-47f2-aa5b-22b594adf231.png)
+![image](https://user-images.githubusercontent.com/84198162/131265137-8f9491af-c68f-4fac-95af-943dfa68ab7d.png)
   
 # Table of Contents
   

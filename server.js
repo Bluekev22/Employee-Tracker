@@ -237,6 +237,69 @@ function viewAllRoles() {
   });
 }
 
+function addRole() {
+  {
+    const sql = 'SELECT * FROM department'
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        let deparmentArr = [];
+        result.forEach((department) => {deparmentArr.push(department.name);});
+        deparmentArr.push('Create Department');
+        inquirer
+          .prompt([
+            {
+              name: 'departmentName',
+              type: 'list',
+              message: 'Which department is this new role in?',
+              choices: deparmentArr
+            }
+          ])
+          .then((answer) => {
+            if (answer.departmentName === 'Create Department') {
+              this.addDepartment();
+            } else {
+              addRoleResume(answer);
+            }
+          });
+  
+        const addRoleResume = (departmentData) => {
+          inquirer
+            .prompt([
+              {
+                name: 'newRole',
+                type: 'input',
+                message: 'What is the name of your new role?',
+                validate: validate.validateString
+              },
+              {
+                name: 'salary',
+                type: 'input',
+                message: 'What is the salary of this new role?',
+                validate: validate.validateSalary
+              }
+            ])
+            .then((answer) => {
+              let createdRole = answer.newRole;
+              let departmentId;
+  
+              result.forEach((department) => {
+                if (departmentData.departmentName === department.name) {departmentId = department.id;}
+              });
+  
+              let sql =   `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+              let roleArr = [createdRole, answer.salary, departmentId];
+  
+              db.query(sql, roleArr, (err) => {
+                if (err) throw err;
+                console.log('Role Successfully Created!');
+                viewAllRoles();
+              });
+            });
+        };
+      });
+    };
+}
+
 function viewAllDepartments() {
   const sql = `SELECT department.id AS id, department.name AS department
   FROM department`;
@@ -249,5 +312,25 @@ function viewAllDepartments() {
     }
   });
 }
+
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        name: 'newDepartment',
+        type: 'input',
+        message: 'What is the name of your new Department?',
+        validate: validate.validateString,
+      }
+    ])
+    .then((answer) => {
+      let sql = `INSERT INTO department (name) VALUES (?)`;
+      db.query(sql, answer.newDepartment, (err) => {
+        if (err) throw err;
+        console.log('Department Successfully Created!')
+        viewAllDepartments();
+      });
+    });
+};
 
 startTable();

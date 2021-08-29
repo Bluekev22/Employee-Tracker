@@ -29,7 +29,6 @@ function startTable() {
             "Add Role",
             "View All Departments",
             "Add Department",
-            "View All Employees",
             "Quit",
           ],
         },
@@ -58,10 +57,8 @@ function startTable() {
           case "Add Department":
             addDepartment();
             break;
-          case "View All Employees":
-            viewAllEmployees();
-            break;
           case "Quit":
+            db.end();
             break;
           default:
             return;
@@ -73,16 +70,14 @@ function startTable() {
 }
 
 function viewAllEmployees() {
-  const sql = `SELECT employee.id, 
-  employee.first_name, 
-  employee.last_name, 
-  role.title, 
-  department.name AS 'department', 
-  role.salary
-  FROM employee, role, department 
-  WHERE department.id = role.department_id 
-  AND role.id = employee.role_id
-  ORDER BY employee.id ASC`;
+  const sql = `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
+  FROM employee e
+  LEFT JOIN role r
+	ON e.role_id = r.id
+  LEFT JOIN department d
+  ON d.id = r.department_id
+  LEFT JOIN employee m
+	ON m.id = e.manager_id`;
   db.query(sql, (err, result) => {
     if (err) {
       console.log(err);
@@ -92,6 +87,18 @@ function viewAllEmployees() {
   });
 }
 
+function viewAllRoles() {
+  const sql = `SELECT role.id, role.title, department.name AS department
+  FROM role
+  INNER JOIN department ON role.department_id = department.id`;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.table(result);
+    }
+  });
+}
 
 function viewAllDepartments() {
   const sql = `SELECT department.id AS id, department.name AS department

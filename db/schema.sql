@@ -14,7 +14,7 @@ CREATE TABLE role (
     salary DECIMAL,
     department_id INT NOT NULL,
     FOREIGN KEY (department_id)
-    REFERENCES department(id)
+    REFERENCES department (id)
 );
 
 CREATE TABLE employee (
@@ -24,7 +24,7 @@ CREATE TABLE employee (
     role_id INT NOT NULL,
     manager_id INT,
     FOREIGN KEY (role_id)
-    REFERENCES role(id),
+    REFERENCES role (id),
     FOREIGN KEY (manager_id)
     REFERENCES employee(id)
 );

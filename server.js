@@ -89,7 +89,85 @@ function viewAllEmployees() {
   });
 }
 
+function addEmployee() {
+  return (
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "firstName",
+          message: "What is the employee's first name?",
+          validate: addFirstName => {
+            if (addFirstName) {
+              return true;
+            } else {
+              console.log('Please enter a first name');
+              return false;
+            }
+          }
+          },
+          {
+            type: "input",
+            name: "lastName",
+            message: "What is the employee's last name?",
+            validate: addLastName => {
+              if (addLastName) {
+                return true;
+              } else {
+                console.log('Please enter a first name');
+                return false;
+              }
+            }
+          }
+      ])
 
+      .then(answers => {
+        const emp = [answers.firstName, answers.lastName];
+        const sql = `SELECT role.id, role.title FROM role`;
+        db.query(sql, (err, result) => {
+          if (err) throw err;
+          const roles = result.map(({id, title}) => ({name: title, value: id}));
+          inquirer.prompt([
+            {
+              type: 'list',
+              name: 'role',
+              message: "What is the employee's role?",
+              choices: roles,
+            }
+          ])
+          .then(chosenRole => {
+            const role = chosenRole.role;
+            emp.push(role);
+            const managerSql = 'SELECT * FROM employee';
+            db.query(managerSql, (err, result) => {
+              if (err) throw err;
+              const managers = result.map(({id, first_name, last_name}) => ({name: first_name + " " + last_name, value: id}));
+              inquirer.prompt([
+                {
+                  type: 'list',
+                  name: 'manager',
+                  message: "Who is the employee's manager?",
+                  choices: managers,
+                }
+              ])
+              .then(chosenManager => {
+                const manager = chosenManager.manager;
+                emp.push(manager);
+                const sql = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+                db.query(sql, emp, (err) => {
+                  if (err) throw err;
+                  console.log("Employee has been added!")
+                  viewAllEmployees();
+                })
+              })
+            })
+          })
+        })
+      })
+      //shows error if any
+      .catch((err) => console.error(err))
+  );
+}
 
 function viewAllRoles() {
   const sql = `SELECT role.id, role.title, department.name AS department, role.salary

@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 const mysql = require("mysql2");
+const validate = require('./js/validate');
 
 // Connect to database
 const db = mysql.createConnection(
@@ -83,12 +84,15 @@ function viewAllEmployees() {
       console.log(err);
     } else {
       console.table(result);
+      startTable();
     }
   });
 }
 
+
+
 function viewAllRoles() {
-  const sql = `SELECT role.id, role.title, department.name AS department
+  const sql = `SELECT role.id, role.title, department.name AS department, role.salary
   FROM role
   INNER JOIN department ON role.department_id = department.id`;
   db.query(sql, (err, result) => {
@@ -96,6 +100,7 @@ function viewAllRoles() {
       console.log(err);
     } else {
       console.table(result);
+      startTable();
     }
   });
 }
@@ -108,6 +113,7 @@ function viewAllDepartments() {
       console.log(err);
     } else {
       console.table(result);
+      startTable();
     }
   });
 }

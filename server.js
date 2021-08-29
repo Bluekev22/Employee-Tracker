@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 const mysql = require("mysql2");
 const validate = require('./js/validate');
+const { response } = require("express");
 
 // Connect to database
 const db = mysql.createConnection(
@@ -167,6 +168,59 @@ function addEmployee() {
       //shows error if any
       .catch((err) => console.error(err))
   );
+}
+
+function updateEmployeeRole() {
+  let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.id AS "role_id"
+  FROM employee, role, department WHERE department.id = role.department_id AND role.id = employee.role_id`;
+  db.query(sql, (err, info) => {
+    if (err) throw err;
+    let employeeArr = [];
+    info.forEach((emp) => {employeeArr.push(`${emp.first_name} ${emp.last_name}`);});
+    
+    let sql = `SELECT role.id, role.title FROM role`;
+    db.query(sql, (err, result) => {
+      if (err) throw err;
+      let rolesArr = [];
+      result.forEach((role) => {rolesArr.push(role.title);});
+
+      inquirer.prompt([
+        {
+          name: 'chosenEmployee',
+          type: 'list',
+          choices: employeeArr,
+        },
+        {
+          name: 'chosenRole',
+          type: 'list',
+          message: 'What is their new role?',
+          choices: rolesArr,
+        }
+      ])
+      .then((answers) => {
+        let newTitleId;
+        let employeeId;
+        result.forEach((role) => {
+          if (answers.chosenRole === role.title) {
+            newTitleId = role.id;
+          }
+        });
+
+        info.forEach((employee) => {
+          if (answers.chosenEmployee === `${employee.first_name} ${employee.last_name}`) {
+            employeeId = employee.id;
+          }
+        });
+
+        let sqls = `UPDATE employee SET employee.role_id = ? WHERE employee.id = ?`;
+        db.query(sqls, [newTitleId, employeeId], (err) => {
+          if (err) throw err;
+          console.log('Employee Role Has Been Updated!');
+          startTable();
+        })
+      })
+    })
+  })
 }
 
 function viewAllRoles() {
